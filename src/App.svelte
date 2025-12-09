@@ -1,9 +1,9 @@
 <script>
   // Import de tous les composants
-  import UserManager from './components/UserManager.svelte';
-  import NotificationCenter from './components/NotificationCenter.svelte';
-  import SearchBox from './components/SearchBox.svelte';
-  import PaginationComponent from './components/PaginationComponent.svelte';
+  import UserManager from './lib/UserManager.svelte';
+  import NotificationCenter from './lib/NotificationCenter.svelte';
+  import SearchBox from './lib/SearchBox.svelte';
+  import PaginationComponent from './lib/PaginationComponent.svelte';
 </script>
 
 <!-- Page principale avec tous les composants -->
