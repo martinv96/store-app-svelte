@@ -55,8 +55,10 @@ export const welcomeMessage = derived(
     // Retournez un message personnalisé
     // Si connecté: "Bienvenue, [name]!"
     // Sinon: "Bienvenue, visiteur"
-    if ($user.isLoggedIn && $user.name) {
+    if ($user.isLoggedIn && $user.name && $user.name.trim()) {
       return `Bienvenue, ${$user.name}!`;
+    } else if ($user.isLoggedIn) {
+      return `Bienvenue!`;
     } else {
       return 'Bienvenue, visiteur';
     }

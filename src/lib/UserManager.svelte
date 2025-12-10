@@ -2,6 +2,7 @@
   // Import des stores
   import { user } from '../stores/user.js';
   import { notifications } from '../stores/notifications.js';
+  import { welcomeMessage } from '../stores/permissions.js';
 
   // Variables locales pour le formulaire
   let email = '';
@@ -15,6 +16,10 @@
 
   <!-- Si l'utilisateur est connecté -->
   {#if $user.id}
+    <div class="welcome-message">
+      <p>{$welcomeMessage}</p>
+    </div>
+
     <div class="user-info">
       <p><strong>ID:</strong> {$user.id}</p>
       <p><strong>Email:</strong> {$user.email}</p>
@@ -98,6 +103,20 @@
     margin: 0 0 1.5rem;
     font-size: 1.25rem;
     color: #1f2937;
+  }
+
+  .welcome-message {
+    padding: 1rem;
+    background: #dbeafe;
+    border-left: 4px solid #0ea5e9;
+    margin-bottom: 1.5rem;
+    border-radius: 0.375rem;
+  }
+
+  .welcome-message p {
+    margin: 0;
+    color: #0369a1;
+    font-weight: 500;
   }
 
   .user-info {

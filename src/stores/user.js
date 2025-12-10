@@ -43,8 +43,9 @@ function createUserStore() {
       // - Mettre isLoggedIn à true
       const userData = {
         id: Math.random().toString(36).substring(2, 9),
-        name: email.split('@')[0],
+        name: email ? email.split('@')[0] : 'Utilisateur',
         email,
+        password,
         role,
         isLoggedIn: true
       };
