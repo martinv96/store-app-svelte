@@ -1,23 +1,50 @@
 <script>
-  // Import des stores de recherche
+  // Import des stores de recherche avec debounce
   import { search, searchResults } from '../stores/search.js';
+  // Import des stores de filtrage et tri
+  import { sortBy, sortOrder } from '../stores/filters.js';
 </script>
 
-<!-- Composant de recherche avec debounce -->
+<!-- Composant de recherche avec debounce et filtrage, tri -->
 <div class="search-box">
-  <h2>Rechercher des Posts</h2>
+  <h2>🔍 Recherche Avancée (Debounce + Filtrage)</h2>
 
-  <!-- Input de recherche -->
-  <div class="search-input-group">
-    <input
-      type="text"
-      placeholder="Tapez pour chercher..."
-      on:input={(e) => search.setSearch(e.currentTarget.value)}
-    />
-    <!-- Bouton pour forcer la recherche immédiate -->
-    <button on:click={() => search.searchNow()}>
-      🔍 Chercher maintenant
-    </button>
+  <!-- Section Recherche avec Debounce -->
+  <div class="search-section">
+    <h3>Recherche (300ms Debounce)</h3>
+    <div class="search-input-group">
+      <input
+        type="text"
+        placeholder="Tapez pour chercher..."
+        on:input={(e) => search.setSearch(e.currentTarget.value)}
+        class="search-input"
+      />
+      <button on:click={() => search.searchNow()}>
+        🔍 Maintenant
+      </button>
+    </div>
+  </div>
+
+  <!-- Section Tri -->
+  <div class="filter-section">
+    <h3>↕️ Tri</h3>
+    <div class="sort-controls">
+      <div class="sort-group">
+        <label for="sort-by">Trier par:</label>
+        <select id="sort-by" bind:value={$sortBy}>
+          <option value="id">ID</option>
+          <option value="title">Titre</option>
+          <option value="body">Longueur du contenu</option>
+        </select>
+      </div>
+      <div class="sort-group">
+        <label for="sort-order">Ordre:</label>
+        <select id="sort-order" bind:value={$sortOrder}>
+          <option value="asc">Ascendant</option>
+          <option value="desc">Descendant</option>
+        </select>
+      </div>
+    </div>
   </div>
 
   <!-- Affiche les résultats -->
@@ -28,11 +55,11 @@
       {#if results && results.length > 0}
         <h3>Résultats ({results.length})</h3>
         <ul>
-          {#each results as post}
+          {#each results as post (post.id)}
             <li>
-              <strong>{post.title || 'Sans titre'}</strong>
+              <strong>#{post.id} - {post.title}</strong>
               <p>{(post.body || '').substring(0, 100)}...</p>
-              <small>ID: {post.id}</small>
+              <small>{post.body.length} caractères</small>
             </li>
           {/each}
         </ul>
@@ -47,8 +74,7 @@
   <!-- Information sur le debounce -->
   <div class="info">
     <small>
-      💡 Les résultats s'affichent 300ms après que vous arrêtiez de taper
-      (c'est le debounce)
+      💡 Les résultats s'affichent 300ms après que vous arrêtiez de taper (c'est le debounce)
     </small>
   </div>
 </div>
@@ -56,21 +82,42 @@
 <style>
   .search-box {
     padding: 1.5rem;
-    margin: 1.25rem;
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
     max-width: 520px;
   }
 
+  .search-box h2 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.3rem;
+    color: #1f2937;
+  }
+
+  .search-section,
+  .filter-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .search-section h3,
+  .filter-section h3 {
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    color: #374151;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
   .search-input-group {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 0.75rem;
-    margin-bottom: 1.5rem;
   }
 
-  input {
+  .search-input {
     padding: 0.625rem 0.875rem;
     font-size: 0.95rem;
     border: 1px solid #d1d5db;
@@ -79,7 +126,7 @@
     transition: all 0.2s ease;
   }
 
-  input:focus {
+  .search-input:focus {
     outline: none;
     background: white;
     border-color: #6366f1;
@@ -106,13 +153,48 @@
     transform: scale(0.98);
   }
 
+  .sort-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .sort-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .sort-group label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6b7280;
+  }
+
+  .sort-group select {
+    padding: 0.625rem;
+    font-size: 0.9rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background: #f9fafb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .sort-group select:focus {
+    outline: none;
+    background: white;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
   .results {
     margin-top: 1.5rem;
     max-height: 520px;
     overflow-y: auto;
   }
 
-  h3 {
+  .results h3 {
     margin: 0 0 1rem 0;
     font-size: 1rem;
     color: #1f2937;

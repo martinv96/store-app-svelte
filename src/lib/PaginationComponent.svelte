@@ -1,9 +1,14 @@
 <script>
+  import { onMount } from 'svelte';
   // Import des stores
   import { posts } from '../stores/posts.js';
+  import { pagination, paginationState, paginationTotalPages, paginationPageRange } from '../stores/pagination.js';
   
-  // Charger les posts de la première page au montage
-  posts.fetchPosts(1);
+  onMount(() => {
+    // Charger les posts de la première page
+    posts.fetchPosts(1);
+    pagination.loadPage(1);
+  });
 </script>
 
 <!-- Composant de pagination -->
@@ -102,6 +107,99 @@
   {#if $posts.error}
     <div class="error">
       ❌ Erreur: {$posts.error}
+    </div>
+  {/if}
+</div>
+
+<!-- Composant de pagination avec pagination.js (Pattern avancé) -->
+<div class="pagination-box">
+  <h2>📌 Pattern Pagination Avancée (pagination.js)</h2>
+
+  <!-- Affiche le statut du chargement -->
+  {#if $paginationState.loading}
+    <div class="loading">⏳ Chargement...</div>
+  {/if}
+
+  <!-- Affiche les posts de la page actuelle -->
+  {#if $paginationState && $paginationState.items && $paginationState.items.length > 0}
+    <div class="posts-list">
+      {#each $paginationState.items as post}
+        <div class="post">
+          <h3>{post.title || 'Sans titre'}</h3>
+          <p>{(post.body || '').substring(0, 100)}...</p>
+          <small>ID: {post.id}</small>
+        </div>
+      {/each}
+    </div>
+  {/if}
+
+  <!-- Affiche les infos de pagination -->
+  {#if $paginationState}
+    <div class="pagination-info">
+      <p>
+        Page <strong>{$paginationState.currentPage}</strong> sur
+        <strong>{$paginationTotalPages}</strong>
+        ({$paginationState.totalItems} posts au total)
+      </p>
+    </div>
+  {/if}
+
+  <!-- Boutons de navigation avec méthodes avancées -->
+  <div class="pagination-controls">
+    <!-- Bouton première page -->
+    <button
+      on:click={() => pagination.firstPage()}
+      disabled={$paginationState.currentPage === 1}
+      title="Aller à la première page"
+    >
+      ⏮️ Première
+    </button>
+
+    <!-- Bouton page précédente -->
+    <button
+      on:click={() => pagination.previousPage()}
+      disabled={$paginationState.currentPage === 1}
+      title="Aller à la page précédente"
+    >
+      ◀️ Précédent
+    </button>
+
+    <!-- Affiche les numéros de page (pageRange: current ±2) -->
+    <div class="page-numbers">
+      {#each $paginationPageRange as pageNum}
+        <button
+          class="page-button {pageNum === $paginationState.currentPage ? 'active' : ''}"
+          on:click={() => pagination.loadPage(pageNum)}
+          disabled={pageNum === $paginationState.currentPage}
+        >
+          {pageNum}
+        </button>
+      {/each}
+    </div>
+
+    <!-- Bouton page suivante -->
+    <button
+      on:click={() => pagination.nextPage()}
+      disabled={$paginationState.currentPage === $paginationTotalPages}
+      title="Aller à la page suivante"
+    >
+      Suivant ▶️
+    </button>
+
+    <!-- Bouton dernière page -->
+    <button
+      on:click={() => pagination.lastPage()}
+      disabled={$paginationState.currentPage === $paginationTotalPages}
+      title="Aller à la dernière page"
+    >
+      Dernière ⏭️
+    </button>
+  </div>
+
+  <!-- Affiche les erreurs s'il y en a -->
+  {#if $paginationState.error}
+    <div class="error">
+      ❌ Erreur: {$paginationState.error}
     </div>
   {/if}
 </div>

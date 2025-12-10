@@ -46,7 +46,8 @@ function createPaginationStore(fetchFunction, itemsPerPage = 10) {
   const loadPage = async (page) => {
     // Validation
     const $totalPages = get(totalPages);
-    if (page < 1 || page > $totalPages) return;
+    // Permettre le chargement même si totalPages = 0 (première fois)
+    if (page < 1 || (page > $totalPages && $totalPages > 0)) return;
 
     // TODO 53: Mettre loading à true
     // MODIFICATION: Indiquer qu'on est en train de charger
@@ -110,10 +111,11 @@ function createPaginationStore(fetchFunction, itemsPerPage = 10) {
   };
 
   return {
-    subscribe: state.subscribe,
-    state: { subscribe: state.subscribe },
+    // Les trois stores accessibles directement avec $
+    state,
     totalPages,
     pageRange,
+    // Les méthodes
     loadPage,
     nextPage,
     previousPage,
@@ -135,4 +137,12 @@ const mockFetchFunction = async (page) => {
   };
 };
 
-export const pagination = createPaginationStore(mockFetchFunction, 10);
+const paginationStore = createPaginationStore(mockFetchFunction, 10);
+
+// Exporter les stores directement pour pouvoir les utiliser avec $ dans les composants
+export const paginationState = paginationStore.state;
+export const paginationTotalPages = paginationStore.totalPages;
+export const paginationPageRange = paginationStore.pageRange;
+
+// Exporter aussi l'instance complète pour accéder aux méthodes
+export const pagination = paginationStore;

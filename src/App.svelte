@@ -21,7 +21,7 @@
     <UserManager />
   </section>
 
-  <!-- Section 2: Recherche avec debounce -->
+  <!-- Section 2: Recherche, filtrage et tri -->
   <section class="section">
     <SearchBox />
   </section>
